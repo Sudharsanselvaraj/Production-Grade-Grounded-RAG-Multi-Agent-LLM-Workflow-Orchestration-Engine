@@ -1,0 +1,88 @@
+═══════════════════════════════════════════════════════════════════════════════
+                     LOCAL TESTING IN VS CODE TERMINAL
+═══════════════════════════════════════════════════════════════════════════════
+
+OPEN 3 TERMINALS IN VS CODE
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TERMINAL 1: Backend
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Start Docker services:
+   $ cd "/Users/sudharsan/Downloads/GenAI hooman"
+   $ docker-compose up db qdrant ollama -d
+   $ sleep 15
+
+2. Install backend (takes 2-3 mins):
+   $ pip install -r backend/requirements.txt
+
+3. Start backend server:
+   $ uvicorn backend.main:app --reload --port 8000
+
+   ✓ Should see: "Application startup complete"
+   ✓ Available at: http://localhost:8000/docs
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TERMINAL 2: Frontend
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Install frontend (takes 1 min):
+   $ cd "/Users/sudharsan/Downloads/GenAI hooman/frontend"
+   $ npm install
+
+2. Start frontend server:
+   $ npm run dev
+
+   ✓ Should see: "Local: http://localhost:3000"
+   ✓ Available at: http://localhost:3000
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TERMINAL 3: Commands (use for testing)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Verify everything works:
+   $ docker ps
+   $ curl http://localhost:8000/docs
+   $ python3 -c "from backend.db import SessionLocal; db = SessionLocal(); print('OK')"
+
+Run tests:
+   $ cd "/Users/sudharsan/Downloads/GenAI hooman"
+   $ pytest backend/tests/ -v
+
+Run evaluations:
+   $ python backend/evals/run_evals.py
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+BROWSER ACCESS:
+  Frontend:          http://localhost:3000
+  Backend Docs:      http://localhost:8000/docs
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+PROBLEM FIXES:
+
+Port 8000 already in use?
+  $ lsof -i :8000
+  $ uvicorn backend.main:app --reload --port 8001
+
+Database errors?
+  $ docker-compose restart db
+
+Frontend issues?
+  $ rm -rf node_modules package-lock.json && npm install
+
+Need fresh start?
+  $ docker-compose down -v
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Total setup time: ~6 minutes
+
+Ready? Start Terminal 1! 🚀
+

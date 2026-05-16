@@ -1,15 +1,15 @@
 import './globals.css'
-import AppShell from '@/components/AppShell'
 
 export const metadata = {
-  title: 'Lumen Support Dashboard',
+  title: 'Lumen AI Ops - Enterprise AI Operations Platform',
+  description: 'World-class AI operations for modern enterprise support teams.',
 }
 
 export default function RootLayout({ children }) {
   return (
-    <html>
-      <body>
-        <AppShell>{children}</AppShell>
+    <html lang="en">
+      <body className="antialiased">
+        {children}
       </body>
     </html>
   )
