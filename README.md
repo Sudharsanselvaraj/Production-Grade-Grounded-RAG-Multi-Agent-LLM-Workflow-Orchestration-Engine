@@ -2,7 +2,7 @@
 
 <br/>
 
-<img src="assets/langgraph-seeklogo.png" height="52" alt="LangGraph"/> &nbsp;&nbsp;&nbsp; <img src="assets/ollama-348x512.png" height="52" alt="Ollama"/> &nbsp;&nbsp;&nbsp; <img src="assets/pngegg.png" height="52" alt="ChromaDB"/>
+<img src="assets/langchain-seeklogo.png" height="52" alt="LangGraph"/> &nbsp;&nbsp;&nbsp; <img src="assets/ollama-348x512.png" height="52" alt="Ollama"/> &nbsp;&nbsp;&nbsp; <img src="assets/pngegg.png" height="52" alt="ChromaDB"/>
 
 <br/><br/>
 
