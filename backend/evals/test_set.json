@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "subject": "Charged twice for invoice #1234",
+    "body": "I was billed twice for invoice #1234. Please refund the duplicate charge.",
+    "expected_category": "billing",
+    "expected_article_ids": [1]
+  },
+  {
+    "id": 2,
+    "subject": "Can't login to dashboard",
+    "body": "I cannot access the admin dashboard since yesterday; it shows a 500 error.",
+    "expected_category": "technical",
+    "expected_article_ids": [2]
+  },
+  {
+    "id": 3,
+    "subject": "How to change invoice recipient",
+    "body": "Please tell me how to change invoice recipient for my account.",
+    "expected_category": "billing",
+    "expected_article_ids": [1]
+  },
+  {
+    "id": 4,
+    "subject": "I need to cancel my subscription",
+    "body": "I want to cancel and request a refund following your policy.",
+    "expected_category": "account",
+    "expected_article_ids": [3]
+  }
+]

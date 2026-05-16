@@ -1,0 +1,16 @@
+import './globals.css'
+import AppShell from '@/components/AppShell'
+
+export const metadata = {
+  title: 'Lumen Support Dashboard',
+}
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        <AppShell>{children}</AppShell>
+      </body>
+    </html>
+  )
+}

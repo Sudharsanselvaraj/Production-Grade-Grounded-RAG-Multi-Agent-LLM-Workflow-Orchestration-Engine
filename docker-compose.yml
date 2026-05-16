@@ -1,0 +1,65 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: lumen_support
+      POSTGRES_USER: lumen
+      POSTGRES_PASSWORD: lumen
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  qdrant:
+    image: qdrant/qdrant:v1.8.3
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant-data:/qdrant/storage
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      DATABASE_URL: postgresql+psycopg2://lumen:lumen@db:5432/lumen_support
+      QDRANT_URL: http://qdrant:6333
+      OLLAMA_BASE_URL: http://ollama:11434
+      NEXT_PUBLIC_BACKEND_URL: http://localhost:8000
+      SECRET_KEY: change-me
+    depends_on:
+      - db
+      - qdrant
+      - ollama
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    environment:
+      NEXT_PUBLIC_BACKEND_URL: http://localhost:8000
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - frontend-node-modules:/app/frontend/node_modules
+      - ./eval_reports:/app/eval_reports
+
+volumes:
+  postgres-data:
+  qdrant-data:
+  ollama-data:
+  frontend-node-modules:
