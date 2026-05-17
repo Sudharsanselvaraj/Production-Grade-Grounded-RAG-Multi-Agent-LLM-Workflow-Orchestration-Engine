@@ -2,7 +2,7 @@
 
 <br/>
 
-<img src="assets/langgraph-text.png" height="52" alt="LangGraph"/> &nbsp;&nbsp;&nbsp; <img src="assets/pngegg.png" height="52" alt="ChromaDB"/>
+<img src="assets/pngegg.png" height="52" alt="ChromaDB"/>
 
 <br/><br/>
 
