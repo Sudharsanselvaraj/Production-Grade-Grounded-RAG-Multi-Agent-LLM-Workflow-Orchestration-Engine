@@ -1,123 +1,117 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import * as Icons from 'lucide-react';
-import { motion } from 'framer-motion';
+import { backendPost } from '@/lib/backend';
 
-const MOCK_CHUNKS = [
-  { id: 'chunk_1', source: 'billing_policy_v2.pdf', score: 0.984, content: 'Customers are eligible for a full refund within 14 days of purchase if the usage is below 10% of the allocated quota...', tokens: 124 },
-  { id: 'chunk_2', source: 'pro_rata_rules.docx', score: 0.921, content: 'Pro-rated charges apply during mid-cycle upgrades. The system calculates the remaining days and credits accordingly...', tokens: 98 },
-  { id: 'chunk_3', source: 'enterprise_terms.pdf', score: 0.845, content: 'Enterprise customers with Custom SLAs have a 30-day grace period for billing disputes regardless of usage...', tokens: 210 },
-  { id: 'chunk_4', source: 'help_center_general.txt', score: 0.712, content: 'General help regarding billing can be found in the billing section of the dashboard under settings...', tokens: 45 }
-];
+export default function RetrievalPage() {
+  const [query, setQuery] = useState('refund policy for annual plan upgrade');
+  const [topK, setTopK] = useState(5);
+  const [threshold, setThreshold] = useState(0.2);
+  const [results, setResults] = useState([]);
+  const [latencyMs, setLatencyMs] = useState(0);
+  const [error, setError] = useState('');
 
-const RetrievalExplorer = () => {
-  const [searchQuery, setSearchQuery] = useState('billing refund eligibility');
+  async function runRetrieval() {
+    setError('');
+    const started = performance.now();
+    try {
+      const data = await backendPost('/api/retrieval/search', {
+        query,
+        top_k: topK,
+        min_score: threshold,
+      });
+      setResults(data.results || []);
+      setLatencyMs(Math.round(performance.now() - started));
+    } catch (err) {
+      setError(err.message || 'Retrieval test failed');
+    }
+  }
+
+  const p95 = useMemo(() => {
+    if (!results.length) return 0;
+    const scores = results.map((r) => r.score).sort((a, b) => a - b);
+    const idx = Math.min(scores.length - 1, Math.floor(scores.length * 0.95));
+    return Number(scores[idx].toFixed(4));
+  }, [results]);
+
+  const mrr = useMemo(() => {
+    if (!results.length) return 0;
+    let reciprocal = 0;
+    for (let i = 0; i < results.length; i += 1) {
+      if ((results[i].score || 0) >= threshold) {
+        reciprocal = 1 / (i + 1);
+        break;
+      }
+    }
+    return Number(reciprocal.toFixed(4));
+  }, [results, threshold]);
 
   return (
-    <div className="space-y-10">
-      {/* Header */}
-      <div className="flex justify-between items-end">
-        <div>
-          <h1 className="text-[32px] font-bold tracking-tight text-[#111111]">Retrieval Explorer</h1>
-          <p className="text-[#6B7280] text-[16px] mt-1">Inspect and optimize your RAG system's knowledge retrieval.</p>
-        </div>
-        <div className="flex gap-4 p-1 bg-white border border-[#E5E7EB] rounded-2xl shadow-sm">
-           <div className="flex items-center gap-2 px-4 py-2 border-r border-[#E5E7EB]">
-              <span className="text-[12px] font-black text-[#111111]">1.2ms</span>
-              <span className="text-[11px] font-bold text-[#6B7280] uppercase tracking-wider">P95 Latency</span>
-           </div>
-           <div className="flex items-center gap-2 px-4 py-2">
-              <span className="text-[12px] font-black text-emerald-600">0.94</span>
-              <span className="text-[11px] font-bold text-[#6B7280] uppercase tracking-wider">Mean Reciprocal Rank</span>
-           </div>
-        </div>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-[32px] font-bold tracking-tight text-[#111111]">Retrieval Explorer</h1>
+        <p className="text-[#6B7280] text-[16px] mt-1">Run real embedding search and inspect chunk metadata, citations, and relevance scores.</p>
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-8 h-[calc(100vh-280px)] overflow-hidden">
-        {/* Search & Parameters */}
-        <div className="lg:col-span-4 space-y-6 overflow-y-auto pr-2 custom-scrollbar">
-           <div className="bg-white rounded-[32px] border border-[#E5E7EB] p-8 shadow-sm">
-              <h3 className="text-[14px] font-bold text-[#111111] mb-6 flex items-center gap-2">
-                 <Icons.Search size={18} className="text-[#C7F36B]" />
-                 Query Simulation
-              </h3>
-              <textarea 
-                 value={searchQuery}
-                 onChange={(e) => setSearchQuery(e.target.value)}
-                 className="w-full h-32 p-4 bg-[#F9FAFB] border border-[#E5E7EB] rounded-2xl text-[14px] focus:outline-none focus:ring-4 focus:ring-[#C7F36B]/10 focus:border-[#C7F36B] transition-all resize-none font-medium"
-                 placeholder="Enter query to test retrieval..."
-              />
-              <div className="mt-8 space-y-6">
-                 <div>
-                    <label className="text-[11px] font-black uppercase tracking-widest text-[#9CA3AF] mb-3 block">Top K Results</label>
-                    <input type="range" className="w-full accent-[#111111]" min="1" max="20" defaultValue="5" />
-                 </div>
-                 <div>
-                    <label className="text-[11px] font-black uppercase tracking-widest text-[#9CA3AF] mb-3 block">Score Threshold</label>
-                    <input type="range" className="w-full accent-[#111111]" min="0" max="1" step="0.1" defaultValue="0.7" />
-                 </div>
-                 <button className="w-full py-4 bg-[#111111] text-white rounded-2xl font-bold text-[14px] hover:opacity-90 transition-all">
-                    Test Retrieval
-                 </button>
-              </div>
-           </div>
-
-           <div className="bg-[#111111] text-white rounded-[32px] p-8">
-              <h4 className="text-[12px] font-black uppercase tracking-widest text-[#C7F36B] mb-4">Embedding Model</h4>
-              <p className="text-[14px] font-bold mb-1">text-embedding-3-large</p>
-              <p className="text-[11px] text-slate-400">Dimensions: 3072 • Multi-lingual</p>
-           </div>
+      <div className="bg-white border border-[#E5E7EB] rounded-[28px] p-6 space-y-5">
+        <div>
+          <label className="block text-[11px] font-black uppercase tracking-widest text-[#9CA3AF] mb-2">Search Query</label>
+          <input value={query} onChange={(e) => setQuery(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-[#E5E7EB]" />
         </div>
 
-        {/* Retrieved Results */}
-        <div className="lg:col-span-8 overflow-y-auto px-2 custom-scrollbar">
-           <div className="space-y-6">
-              {MOCK_CHUNKS.map((chunk, i) => (
-                <motion.div 
-                  key={chunk.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  className="bg-white rounded-[32px] border border-[#E5E7EB] shadow-sm overflow-hidden group hover:border-[#C7F36B] transition-all"
-                >
-                   <div className="p-6 border-b border-[#F3F4F6] bg-[#F9FAFB]/50 flex justify-between items-center">
-                      <div className="flex items-center gap-3">
-                         <span className="text-[12px] font-black text-[#111111] font-mono">{chunk.id}</span>
-                         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-[#E5E7EB]">
-                            <Icons.FileText size={12} className="text-[#6B7280]" />
-                            <span className="text-[11px] font-bold text-[#111111]">{chunk.source}</span>
-                         </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                         <div className="text-right">
-                            <p className="text-[10px] font-black text-[#9CA3AF] uppercase">Similarity</p>
-                            <p className="text-[14px] font-black text-[#111111]">{Math.round(chunk.score * 100)}%</p>
-                         </div>
-                         <div className="w-1.5 h-10 rounded-full bg-[#C7F36B]" style={{ opacity: chunk.score }} />
-                      </div>
-                   </div>
-                   <div className="p-8">
-                      <p className="text-[15px] text-[#111111] leading-relaxed font-medium">
-                         {chunk.content}
-                      </p>
-                      <div className="mt-8 pt-6 border-t border-[#F3F4F6] flex justify-between items-center">
-                         <div className="flex gap-4">
-                            <span className="text-[11px] font-bold text-[#6B7280]">{chunk.tokens} tokens</span>
-                            <span className="text-[11px] font-bold text-[#6B7280]">UTF-8</span>
-                         </div>
-                         <button className="text-[12px] font-black uppercase tracking-widest text-[#111111] hover:text-[#C7F36B] transition-colors">
-                            Inspect Metadata
-                         </button>
-                      </div>
-                   </div>
-                </motion.div>
-              ))}
-           </div>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-[11px] font-black uppercase tracking-widest text-[#9CA3AF] mb-2">Top-K: {topK}</label>
+            <input type="range" min={1} max={20} value={topK} onChange={(e) => setTopK(Number(e.target.value))} className="w-full" />
+          </div>
+          <div>
+            <label className="block text-[11px] font-black uppercase tracking-widest text-[#9CA3AF] mb-2">Score Threshold: {threshold.toFixed(2)}</label>
+            <input type="range" min={0} max={1} step={0.01} value={threshold} onChange={(e) => setThreshold(Number(e.target.value))} className="w-full" />
+          </div>
+        </div>
+
+        <button onClick={runRetrieval} className="px-5 py-2.5 rounded-xl bg-[#C7F36B] text-[#111111] font-bold flex items-center gap-2">
+          <Icons.Play size={16} /> Test Retrieval
+        </button>
+
+        {error ? <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-[13px]">{error}</div> : null}
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-6">
+        <MetricCard label="P95 Latency" value={`${latencyMs}ms`} />
+        <MetricCard label="Mean Reciprocal Rank" value={mrr.toString()} />
+        <MetricCard label="P95 Score" value={p95.toString()} />
+      </div>
+
+      <div className="bg-white border border-[#E5E7EB] rounded-[28px] p-6">
+        <h2 className="text-[16px] font-bold text-[#111111] mb-4">Retrieved Chunks</h2>
+        <div className="space-y-4">
+          {results.map((chunk, i) => (
+            <div key={`${chunk.id}-${i}`} className="rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB] p-5">
+              <div className="flex justify-between items-start gap-3 mb-2">
+                <div>
+                  <p className="text-[13px] font-bold text-[#111111]">{chunk.document || chunk.source || 'Unknown document'}</p>
+                  <p className="text-[11px] text-[#6B7280]">Source: {chunk.source || 'n/a'} • Page: {chunk.page || 'n/a'} • Date: {chunk.date || 'n/a'}</p>
+                </div>
+                <span className="text-[11px] font-black text-emerald-700 bg-emerald-50 px-2 py-1 rounded">{(chunk.score || 0).toFixed(4)}</span>
+              </div>
+              <p className="text-[13px] text-[#111827] leading-relaxed">{chunk.chunk || 'No chunk text available.'}</p>
+              <p className="text-[11px] text-[#9CA3AF] mt-2">Embedding model: {chunk.embedding_model || 'default'}</p>
+            </div>
+          ))}
+          {!results.length ? <p className="text-[13px] text-[#6B7280]">No retrieval results yet. Run a test query.</p> : null}
         </div>
       </div>
     </div>
   );
-};
+}
 
-export default RetrievalExplorer;
+function MetricCard({ label, value }) {
+  return (
+    <div className="bg-white border border-[#E5E7EB] rounded-2xl p-5">
+      <p className="text-[11px] font-black uppercase tracking-widest text-[#9CA3AF]">{label}</p>
+      <p className="mt-2 text-[24px] font-black text-[#111111]">{value}</p>
+    </div>
+  );
+}

@@ -11,6 +11,34 @@ from ..repositories.ticket_repo import update_ticket_decision
 settings = config.settings
 
 
+def _extract_json_payload(text: str) -> str:
+    start = text.find("{")
+    if start == -1:
+        raise RuntimeError("model output missing JSON object")
+    depth = 0
+    in_string = False
+    escape = False
+    for index in range(start, len(text)):
+        char = text[index]
+        if in_string:
+            if escape:
+                escape = False
+            elif char == "\\":
+                escape = True
+            elif char == '"':
+                in_string = False
+            continue
+        if char == '"':
+            in_string = True
+        elif char == '{':
+            depth += 1
+        elif char == '}':
+            depth -= 1
+            if depth == 0:
+                return text[start : index + 1]
+    raise RuntimeError("unterminated JSON object in model output")
+
+
 def load_prompt(path: str = "backend/prompts/drafting/v1.md") -> str:
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
@@ -70,6 +98,7 @@ def generate_draft(db, ticket, prompt_path: str = "backend/prompts/drafting/v1.m
             text = None
             if isinstance(resp, dict):
                 text = resp.get("output") or (resp.get("choices") and resp["choices"][0].get("message"))
+                text = text or resp.get("response")
             if not text:
                 raise RuntimeError("no model output")
             # parse JSON
@@ -77,11 +106,7 @@ def generate_draft(db, ticket, prompt_path: str = "backend/prompts/drafting/v1.m
             try:
                 j = json.loads(text)
             except Exception:
-                # try to extract JSON substring
-                import re
-                m = re.search(r"\{.*\}", text, re.S)
-                if m:
-                    j = json.loads(m.group(0))
+                j = json.loads(_extract_json_payload(text))
             if not j or 'draft' not in j:
                 raise RuntimeError("model output missing draft")
 

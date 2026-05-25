@@ -6,6 +6,7 @@ from .db import init_db
 from .api.retrieval import router as retrieval_router
 from .api.observability import router as observability_router
 from .api.auth import router as auth_router
+from .api.platform import router as platform_router
 
 app = FastAPI(title="Lumen GenAI Support Automation")
 
@@ -19,6 +20,7 @@ app.add_middleware(
 
 app.include_router(ingest_router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
+app.include_router(platform_router, prefix="/api")
 app.include_router(tickets_router, prefix="/api")
 app.include_router(retrieval_router, prefix="/api/retrieval")
 app.include_router(observability_router, prefix="/api")

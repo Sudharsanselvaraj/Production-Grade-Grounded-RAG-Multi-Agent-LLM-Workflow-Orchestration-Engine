@@ -48,8 +48,8 @@ const Sidebar = () => {
       {/* Logo */}
       <div className="px-8 py-10">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-[#111111] rounded-xl flex items-center justify-center">
-            <Icons.Zap size={18} className="text-[#C7F36B] fill-[#C7F36B]" />
+          <div className="w-9 h-9 bg-[#C7F36B] rounded-xl flex items-center justify-center">
+            <Icons.Zap size={18} className="text-[#111111]" />
           </div>
           <div>
             <p className="font-bold text-[#111111] text-[16px] tracking-tight leading-none">Lumen</p>
@@ -99,7 +99,7 @@ const Sidebar = () => {
       {/* Footer Profile */}
       <div className="px-6 py-6 border-t border-[#E5E7EB] bg-[#F9FAFB]/50">
         <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-white transition-all cursor-pointer group">
-          <div className="w-10 h-10 rounded-full bg-[#111111] text-white flex items-center justify-center font-bold text-[14px]">
+          <div className="w-10 h-10 rounded-full bg-[#C7F36B] text-[#111111] flex items-center justify-center font-bold text-[14px]">
             SU
           </div>
           <div className="flex-1 min-w-0">

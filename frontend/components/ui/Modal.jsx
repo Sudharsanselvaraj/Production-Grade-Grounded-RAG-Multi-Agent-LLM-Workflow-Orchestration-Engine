@@ -11,7 +11,7 @@ const Modal = ({ isOpen, onClose, children, title, className }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-[#F7F8F5]/80 backdrop-blur-sm z-40"
             onClick={onClose}
           />
           <motion.div

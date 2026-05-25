@@ -214,9 +214,15 @@ def _render_html(report: Dict[str, Any]) -> str:
 </html>"""
 
 
-def run():
-    init_db()
-    db = SessionLocal()
+from backend.models.tables import Ticket, EvaluationRun
+
+def execute_evaluation_run(
+    db: SessionLocal,
+    dataset: str = "FAQ",
+    model_version: str = "gpt-4o",
+    prompt_version: str = None
+) -> EvaluationRun:
+    """Execute the full evaluation pipeline and persist the EvaluationRun to the database."""
     index_help_articles()
     index_tickets()
 
@@ -227,6 +233,8 @@ def run():
     judge_scores = []
     judge_groundedness = []
     judge_helpfulness = []
+
+    start_time = time.time()
 
     for item in tests:
         t = Ticket(subject=item["subject"], body=item["body"], status="eval")
@@ -295,6 +303,8 @@ def run():
         pred_labels.append(predicted or "<error>")
         time.sleep(0.1)
 
+    total_latency_ms = (time.time() - start_time) * 1000.0
+
     # metrics
     total = max(1, len(items))
     classification_accuracy = sum(1 for r in items if r.predicted_category == r.expected_category) / total
@@ -359,6 +369,30 @@ def run():
     print(f"Wrote eval report: {json_path}")
     print(f"Wrote eval report: {html_path}")
     print(f"Wrote eval report: {md_path}")
+
+    # Persist the EvaluationRun metrics in the database
+    avg_judge = mean(judge_scores) / 5.0 if judge_scores else 0.0
+    run_record = EvaluationRun(
+        dataset=dataset,
+        model_version=model_version,
+        prompt_version=prompt_version or "v1",
+        groundedness=draft_citation_rate,
+        hallucination_rate=1.0 - draft_citation_rate,
+        judge_score=avg_judge,
+        retrieval_precision=retrieval_precision_at_k,
+        latency_ms=total_latency_ms / total,
+        created_at=datetime.utcnow(),
+    )
+    db.add(run_record)
+    db.commit()
+    db.refresh(run_record)
+    return run_record
+
+
+def run():
+    init_db()
+    db = SessionLocal()
+    execute_evaluation_run(db, dataset="FAQ", model_version="gpt-4o", prompt_version="v1")
 
 
 if __name__ == "__main__":

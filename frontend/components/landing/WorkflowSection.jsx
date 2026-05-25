@@ -32,6 +32,27 @@ const WORKFLOW_ITEMS = [
     description: 'Enable human operators to review, modify, and approve AI actions before they reach the customer.',
     icon: 'UserCheck',
     details: ['Accept/Reject workflows', 'Confidence thresholding', 'Full audit history']
+  },
+  {
+    id: 'evaluation',
+    title: 'AI Evaluation Harness',
+    description: 'Run groundedness, hallucination, and override measurements against every release before promotion.',
+    icon: 'BarChart3',
+    details: ['Confusion matrix analysis', 'Judge scoring calibration', 'Release gating checks']
+  },
+  {
+    id: 'orchestration',
+    title: 'Workflow Orchestration',
+    description: 'Visualize routing, tools, retries, and escalation paths as a governed execution graph.',
+    icon: 'GitBranch',
+    details: ['Nested span playback', 'Tool usage visibility', 'Trace-level history']
+  },
+  {
+    id: 'observability',
+    title: 'Observability & Tracing',
+    description: 'Inspect model latency, token usage, failures, and operational health in one system.',
+    icon: 'Activity',
+    details: ['Latency histograms', 'Token and cost tracking', 'Failure and retry visibility']
   }
 ];
 
@@ -39,7 +60,7 @@ const WorkflowSection = () => {
   const [activeTab, setActiveTab] = useState(WORKFLOW_ITEMS[0]);
 
   return (
-    <section className="py-32 px-6 bg-white border-y border-[#E5E7EB]">
+    <section id="workflow" className="py-32 px-6 bg-white border-y border-[#E5E7EB]">
       <div className="max-w-[1400px] mx-auto">
         <div className="text-center mb-20">
           <h2 className="text-[40px] lg:text-[56px] font-bold tracking-tight text-[#111111] mb-4">
@@ -59,7 +80,10 @@ const WorkflowSection = () => {
               >
                 <div className="flex items-center gap-4 mb-4">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${activeTab.id === item.id ? 'bg-[#C7F36B] text-[#111111]' : 'bg-[#F3F4F6] text-[#6B7280]'}`}>
-                    {Icons[item.icon] && <Icons[item.icon] size={20} />}
+                      {(() => {
+                        const Icon = Icons[item.icon]
+                        return Icon ? <Icon size={20} /> : null
+                      })()}
                   </div>
                   <h3 className="text-[20px] font-bold text-[#111111]">{item.title}</h3>
                 </div>
@@ -116,12 +140,12 @@ const WorkflowSection = () => {
                         <div className="flex justify-center py-4">
                            <Icons.ArrowDown className="text-slate-300" />
                         </div>
-                        <div className="p-6 bg-[#111111] text-white rounded-3xl shadow-2xl relative">
+                        <div className="p-6 bg-white text-[#111111] rounded-3xl shadow-2xl relative border border-[#E5E7EB]">
                            <div className="absolute -top-3 -right-3 bg-[#C7F36B] text-[#111111] text-[10px] font-black px-2 py-1 rounded-md uppercase">AI ROUTING</div>
                            <p className="text-[14px] font-bold mb-2">Intent Detected: Billing</p>
                            <div className="flex gap-2">
-                              <span className="text-[10px] bg-white/10 px-2 py-1 rounded">Priority: High</span>
-                              <span className="text-[10px] bg-[#C7F36B]/20 text-[#C7F36B] px-2 py-1 rounded">Confidence: 99%</span>
+                            <span className="text-[10px] bg-[#F7F8F5] border border-[#E5E7EB] px-2 py-1 rounded">Priority: High</span>
+                            <span className="text-[10px] bg-[#EEF7E8] text-emerald-700 px-2 py-1 rounded">Confidence: 99%</span>
                            </div>
                         </div>
                      </div>
@@ -137,7 +161,7 @@ const WorkflowSection = () => {
                                <div className="h-2 w-3/4 bg-[#F3F4F6] rounded" />
                             </div>
                          </div>
-                         <div className="p-6 bg-white border border-[#E5E7EB] rounded-3xl shadow-xl border-l-4 border-l-[#22C55E]">
+                         <div className="p-6 bg-[#F7F8F5] border border-[#E5E7EB] rounded-3xl shadow-xl border-l-4 border-l-[#22C55E]">
                             <Icons.FileText className="text-[#22C55E] mb-4" />
                             <p className="text-[14px] font-bold mb-2">Grounding Verified</p>
                             <p className="text-[10px] text-[#6B7280]">Source: Refund Policy v2.4</p>
@@ -146,7 +170,7 @@ const WorkflowSection = () => {
                    )}
 
                    {activeTab.id === 'review' && (
-                     <div className="w-full bg-white rounded-3xl border border-[#E5E7EB] shadow-2xl overflow-hidden">
+                     <div className="w-full bg-[#F7F8F5] rounded-3xl border border-[#E5E7EB] shadow-2xl overflow-hidden">
                         <div className="p-4 border-b border-[#E5E7EB] flex items-center justify-between">
                            <span className="text-[12px] font-bold">Human-in-the-Loop</span>
                            <StatusBadge status="Pending Review" />
@@ -163,6 +187,79 @@ const WorkflowSection = () => {
                      </div>
                    )}
 
+                     {activeTab.id === 'evaluation' && (
+                       <div className="w-full max-w-lg grid gap-4">
+                         <div className="grid grid-cols-2 gap-4">
+                           <div className="rounded-3xl bg-white border border-[#E5E7EB] p-5 shadow-xl">
+                             <p className="text-[10px] font-black uppercase tracking-widest text-[#9CA3AF]">Groundedness</p>
+                             <p className="mt-2 text-[34px] font-black text-[#111111]">98.2%</p>
+                             <p className="text-[12px] text-emerald-600 font-bold">+0.4% vs last week</p>
+                           </div>
+                           <div className="rounded-3xl bg-white text-[#111111] p-5 shadow-xl border border-[#E5E7EB]">
+                             <p className="text-[10px] font-black uppercase tracking-widest text-[#6B7280]">Override Rate</p>
+                             <p className="mt-2 text-[34px] font-black">12.4%</p>
+                             <p className="text-[12px] text-[#6B7280] font-bold">-1.5% vs last week</p>
+                           </div>
+                         </div>
+                         <div className="rounded-3xl bg-white border border-[#E5E7EB] p-5 shadow-xl space-y-3">
+                           <div className="flex justify-between text-[12px] font-bold">
+                             <span>Confusion Matrix</span>
+                             <span className="text-[#6B7280]">Release gate active</span>
+                           </div>
+                           <div className="grid grid-cols-2 gap-2">
+                             <div className="h-20 rounded-2xl bg-emerald-100 border border-emerald-200" />
+                             <div className="h-20 rounded-2xl bg-amber-100 border border-amber-200" />
+                             <div className="h-20 rounded-2xl bg-[#F7F8F5] border border-[#E5E7EB]" />
+                             <div className="h-20 rounded-2xl bg-[#F3F4F6] border border-[#E5E7EB]" />
+                           </div>
+                         </div>
+                       </div>
+                     )}
+
+                    {activeTab.id === 'orchestration' && (
+                                         <div className="w-full max-w-md space-y-3">
+                                           {[
+                                             { label: 'ingest', detail: 'Ticket captured from Zendesk webhook', color: 'bg-[#C7F36B]', text: 'text-[#111111]' },
+                                             { label: 'classify', detail: 'Intent + sentiment inferred', color: 'bg-[#22C55E]', text: 'text-white' },
+                                             { label: 'retrieve', detail: 'Top-4 knowledge chunks selected', color: 'bg-emerald-500', text: 'text-white' },
+                                             { label: 'draft', detail: 'Grounded response generated', color: 'bg-[#F3F4F6]', text: 'text-[#111111]' },
+                                           ].map((step, index) => (
+                                             <div key={step.label} className="rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-lg flex items-center gap-4">
+                                               <div className={`h-10 w-10 rounded-xl ${step.color} ${step.text} flex items-center justify-center font-black text-[11px]`}>{index + 1}</div>
+                                               <div className="flex-1">
+                                                 <p className="text-[12px] font-black uppercase tracking-widest text-[#111111]">{step.label}</p>
+                                                 <p className="text-[11px] text-[#6B7280]">{step.detail}</p>
+                                               </div>
+                                             </div>
+                                           ))}
+                                         </div>
+                                       )}
+
+                     {activeTab.id === 'observability' && (
+                       <div className="w-full max-w-lg grid grid-cols-2 gap-4">
+                         <div className="rounded-3xl bg-white p-5 text-[#111111] shadow-2xl col-span-2 border border-[#E5E7EB]">
+                           <div className="flex justify-between items-center">
+                             <div>
+                               <p className="text-[10px] font-black uppercase tracking-widest text-[#6B7280]">Live trace</p>
+                               <p className="mt-2 text-[16px] font-bold">OpenAI GPT-4o → Retrieval → Policy Gate</p>
+                             </div>
+                             <div className="text-right">
+                               <p className="text-[10px] text-slate-400 font-black uppercase">Latency</p>
+                               <p className="text-[28px] font-black">124ms</p>
+                             </div>
+                           </div>
+                         </div>
+                         <div className="rounded-3xl bg-white border border-[#E5E7EB] p-5 shadow-xl">
+                           <p className="text-[10px] font-black uppercase tracking-widest text-[#9CA3AF]">Tokens</p>
+                           <p className="mt-2 text-[30px] font-black text-[#111111]">2.4K</p>
+                         </div>
+                         <div className="rounded-3xl bg-white border border-[#E5E7EB] p-5 shadow-xl">
+                           <p className="text-[10px] font-black uppercase tracking-widest text-[#9CA3AF]">Failures</p>
+                           <p className="mt-2 text-[30px] font-black text-[#111111]">1</p>
+                         </div>
+                       </div>
+                     )}
+
                    {/* Add more as needed */}
                    {!['routing', 'retrieval', 'review'].includes(activeTab.id) && (
                      <div className="text-[#6B7280] font-medium text-[16px]">
@@ -173,7 +270,7 @@ const WorkflowSection = () => {
              </AnimatePresence>
 
              {/* Background Grid */}
-             <div className="absolute inset-0 z-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#11111110 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+             <div className="absolute inset-0 z-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#0f172010 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
           </div>
         </div>
       </div>

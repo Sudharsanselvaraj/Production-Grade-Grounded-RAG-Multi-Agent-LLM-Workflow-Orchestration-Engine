@@ -11,6 +11,34 @@ class ClassificationError(Exception):
     pass
 
 
+def _extract_json_payload(text: str) -> str:
+    start = text.find("{")
+    if start == -1:
+        raise ClassificationError("model output missing JSON object")
+    depth = 0
+    in_string = False
+    escape = False
+    for index in range(start, len(text)):
+        char = text[index]
+        if in_string:
+            if escape:
+                escape = False
+            elif char == "\\":
+                escape = True
+            elif char == '"':
+                in_string = False
+            continue
+        if char == '"':
+            in_string = True
+        elif char == '{':
+            depth += 1
+        elif char == '}':
+            depth -= 1
+            if depth == 0:
+                return text[start : index + 1]
+    raise ClassificationError("unterminated JSON object in model output")
+
+
 def load_prompt(path: str) -> str:
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
@@ -39,13 +67,18 @@ def classify_ticket(db, ticket, prompt_path: str = "backend/prompts/classificati
                 # Ollama may return {'choices': [{'message': '...'}]} or {'output': '...'}
                 if "output" in resp:
                     text = resp["output"]
+                elif "response" in resp:
+                    text = resp["response"]
                 elif "choices" in resp and resp["choices"]:
                     c = resp["choices"][0]
                     text = c.get("message") or c.get("text") or c.get("content")
             if not text:
                 raise ClassificationError("no text in model response")
             # Attempt to parse JSON from the model output
-            j = json.loads(text)
+            try:
+                j = json.loads(text)
+            except Exception:
+                j = json.loads(_extract_json_payload(text))
             # Sanity-check required keys
             required = ["category", "urgency", "sentiment", "spam_score", "escalation_risk", "confidence"]
             for k in required:

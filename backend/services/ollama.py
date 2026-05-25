@@ -17,7 +17,7 @@ class OllamaClient:
         with `model` and `prompt`. Adjust if your Ollama version exposes a different path.
         """
         url = f"{self.base}/api/generate"
-        payload = {"model": model, "prompt": prompt, "max_tokens": max_tokens}
+        payload = {"model": model, "prompt": prompt, "max_tokens": max_tokens, "stream": False, "format": "json"}
         resp = requests.post(url, json=payload, timeout=self.timeout)
         resp.raise_for_status()
         return resp.json()

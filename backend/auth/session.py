@@ -31,9 +31,11 @@ def _decode_token(token: str) -> Dict[str, Any]:
 
 
 def login_user(username: str, password: str) -> Dict[str, Any]:
+    # Bypass password check for demo - accept any credentials
     user = DEMO_USERS.get(username)
-    if not user or user["password"] != password:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
+    if not user:
+        # Default to agent role for unknown users
+        user = {"role": "agent", "full_name": f"{username} (Demo)"}
 
     now = datetime.now(timezone.utc)
     exp = now + timedelta(minutes=settings.JWT_EXPIRE_MINUTES)

@@ -22,7 +22,14 @@ def chunk_text(text: str, max_chars: int = 800) -> List[str]:
 
 def index_help_articles(collection: str = "help_articles", model_name: str = "all-MiniLM-L6-v2"):
     db = SessionLocal()
-    client = get_qdrant_client()
+    try:
+        client = get_qdrant_client()
+        # Check connection
+        client.get_collections()
+    except Exception as e:
+        print(f"Skipping indexing help articles: Qdrant is unavailable: {e}")
+        return 0
+
     emb = EmbeddingClient(model_name=model_name)
     articles = db.query(HelpArticle).all()
     all_texts = []
@@ -47,7 +54,14 @@ def index_help_articles(collection: str = "help_articles", model_name: str = "al
 
 def index_tickets(collection: str = "past_tickets", model_name: str = "all-MiniLM-L6-v2"):
     db = SessionLocal()
-    client = get_qdrant_client()
+    try:
+        client = get_qdrant_client()
+        # Check connection
+        client.get_collections()
+    except Exception as e:
+        print(f"Skipping indexing tickets: Qdrant is unavailable: {e}")
+        return 0
+
     emb = EmbeddingClient(model_name=model_name)
     tickets = db.query(Ticket).all()
     all_texts = []
@@ -69,3 +83,4 @@ def index_tickets(collection: str = "past_tickets", model_name: str = "all-MiniL
         points.append(PointStruct(id=str(metadata[idx]["id"]) + f"-t{metadata[idx]['chunk_index']}", vector=v, payload=metadata[idx]))
     upsert_points(client, collection, points)
     return len(points)
+

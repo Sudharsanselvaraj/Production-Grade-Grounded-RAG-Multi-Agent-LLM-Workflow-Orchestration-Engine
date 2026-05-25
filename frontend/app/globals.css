@@ -8,7 +8,7 @@
   --background: #F7F8F5;
   --card: #FFFFFF;
   --primary: #C7F36B;
-  --secondary: #111111;
+  --secondary: #0f1720;
   --border: #E5E7EB;
   --text-primary: #111827;
   --text-secondary: #6B7280;
@@ -36,7 +36,7 @@ body {
   }
   
   .btn-secondary {
-    @apply px-6 py-3 bg-[#111111] text-white font-semibold rounded-full hover:opacity-90 transition-all;
+    @apply px-6 py-3 bg-white border border-[#E5E7EB] text-[#111111] font-semibold rounded-full hover:opacity-90 transition-all;
   }
   
   .btn-outline {

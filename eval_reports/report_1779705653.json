@@ -1,0 +1,102 @@
+{
+  "generated_at": "2026-05-25 10:40:53 UTC",
+  "summary": {
+    "num_items": 4,
+    "classification_errors": 4,
+    "retrieval_misses": 4,
+    "drafts_with_citations": 0
+  },
+  "metrics": {
+    "classification_accuracy": 0.0,
+    "retrieval_precision_at_k": 0.0,
+    "draft_citation_rate": 0.0,
+    "judge_exact_match": 0.0,
+    "judge_mae": 0,
+    "judge_bias": 0,
+    "judge_note": "Judge scores are compared against a lightweight proxy rubric (grounded+retrieved => higher score). Lower MAE and bias near zero indicate better calibration."
+  },
+  "confusion_matrix": {
+    "<error>": {
+      "<error>": 0,
+      "account": 0,
+      "billing": 0,
+      "technical": 0
+    },
+    "account": {
+      "<error>": 1,
+      "account": 0,
+      "billing": 0,
+      "technical": 0
+    },
+    "billing": {
+      "<error>": 2,
+      "account": 0,
+      "billing": 0,
+      "technical": 0
+    },
+    "technical": {
+      "<error>": 1,
+      "account": 0,
+      "billing": 0,
+      "technical": 0
+    }
+  },
+  "items": [
+    {
+      "ticket_id": 73,
+      "subject": "Charged twice for invoice #1234",
+      "expected_category": "billing",
+      "predicted_category": null,
+      "classification_confidence": null,
+      "retrieval_hit": false,
+      "draft_has_citations": false,
+      "judge_score": 2,
+      "judge_groundedness": 2,
+      "judge_helpfulness": 2,
+      "judge_rationale": "heuristic fallback: judge model unavailable",
+      "error": "classification: classification failed after retries: HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 61] Connection refused\")) | drafting: drafting failed: HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 61] Connection refused\"))"
+    },
+    {
+      "ticket_id": 74,
+      "subject": "Can't login to dashboard",
+      "expected_category": "technical",
+      "predicted_category": null,
+      "classification_confidence": null,
+      "retrieval_hit": false,
+      "draft_has_citations": false,
+      "judge_score": 2,
+      "judge_groundedness": 2,
+      "judge_helpfulness": 2,
+      "judge_rationale": "heuristic fallback: judge model unavailable",
+      "error": "classification: classification failed after retries: HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 61] Connection refused\")) | drafting: drafting failed: HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 61] Connection refused\"))"
+    },
+    {
+      "ticket_id": 75,
+      "subject": "How to change invoice recipient",
+      "expected_category": "billing",
+      "predicted_category": null,
+      "classification_confidence": null,
+      "retrieval_hit": false,
+      "draft_has_citations": false,
+      "judge_score": 2,
+      "judge_groundedness": 2,
+      "judge_helpfulness": 2,
+      "judge_rationale": "heuristic fallback: judge model unavailable",
+      "error": "classification: classification failed after retries: HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 61] Connection refused\")) | drafting: drafting failed: HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 61] Connection refused\"))"
+    },
+    {
+      "ticket_id": 76,
+      "subject": "I need to cancel my subscription",
+      "expected_category": "account",
+      "predicted_category": null,
+      "classification_confidence": null,
+      "retrieval_hit": false,
+      "draft_has_citations": false,
+      "judge_score": 2,
+      "judge_groundedness": 2,
+      "judge_helpfulness": 2,
+      "judge_rationale": "heuristic fallback: judge model unavailable",
+      "error": "classification: classification failed after retries: HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 61] Connection refused\")) | drafting: drafting failed: HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 61] Connection refused\"))"
+    }
+  ]
+}
