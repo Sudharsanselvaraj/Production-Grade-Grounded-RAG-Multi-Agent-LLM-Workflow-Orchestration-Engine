@@ -2,7 +2,9 @@
 
 <br/>
 
-<img src="assets/pngegg.png" height="52" alt="ChromaDB"/>
+<img src="assets/pngegg.png" height="52" alt="ChromaDB"/> 
+
+<img src="assets/wordmark_light.svg " height="45" alt="ChromaDB"/>
 
 <br/><br/>
 
