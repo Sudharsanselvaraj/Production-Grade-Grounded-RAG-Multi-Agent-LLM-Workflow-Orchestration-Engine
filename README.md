@@ -16,16 +16,6 @@
 
 <br/>
 
-[![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
-[![Next.js](https://img.shields.io/badge/Next.js-13-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org)
-[![Ollama](https://img.shields.io/badge/Ollama-local_LLM-FF6C2C?style=flat-square)](https://ollama.ai)
-[![ChromaDB](https://img.shields.io/badge/ChromaDB-vector_store-7B2EBF?style=flat-square)](https://www.trychroma.com)
-[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0-D71F00?style=flat-square)](https://www.sqlalchemy.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-22C55E?style=flat-square)](LICENSE)
-
-<br/>
-
 [Architecture](#architecture) · [Workflow Pipeline](#workflow-pipeline) · [Model Routing](#model-routing) · [RAG System](#rag-system) · [Guardrails](#guardrails) · [Observability](#observability) · [Evaluation Harness](#evaluation-harness) · [Frontend](#frontend) · [Quick Start](#quick-start) · [API Reference](#api-reference) · [Deployment](#deployment)
 
 <br/>
