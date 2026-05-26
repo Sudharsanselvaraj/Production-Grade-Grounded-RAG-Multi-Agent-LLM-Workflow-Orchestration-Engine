@@ -1,9 +1,3 @@
-"""
-Lumen Support AI — Database Models
-SQLAlchemy 2.0 async ORM models. Each table has a clear purpose.
-UUIDs as PKs for distributed-safe ID generation.
-"""
-
 import uuid
 from datetime import datetime
 from typing import Optional
